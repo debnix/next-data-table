@@ -1,0 +1,56 @@
+:root{
+  /**********Colors********/
+  --primary: #000000;
+  --light: #ffffff;
+  --border-gold: #978145;
+  --hover-select: #9d9b9b;
+
+
+  /******Times animation********/
+  --time-animation-menu: 1s;
+  --time-animation-options: 0.5s;
+
+  /*********Size devices*********/
+  --mobile-sm: 364px;
+  --mobile-md: 576px;
+  --tablets-sm: 992px;
+  --tablets-xl: 1200px;
+
+
+}
+
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+.ripple:hover {
+  background: #3d3d3d radial-gradient(circle, transparent 1%, #3d3d3d 1%) center/15000%;
+}
+.ripple:active {
+  background-color: #3d3d3d;
+  background-size: 100%;
+  transition: background 0s;
+}
+
+.table{
+  border-radius: 10px;
+  border-collapse: collapse;
+  width: 100%;
+  text-align: center;
+  th{
+    border-top: 1px solid var(--border-gold);
+    padding: 0.5rem 0.2rem;
+  }
+  tr{    
+    border-bottom: 1px solid var(--border-gold);
+  }
+  td{
+    padding: 0.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+.column-check{
+  text-align: left;
+}
