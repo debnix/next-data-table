@@ -9,15 +9,24 @@ export default {
 } as ComponentMeta<typeof IconFactory>
 
 export const icons: ComponentStory<typeof IconFactory> = (args) => (
-	<>
+	<article style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
 		{Object.entries(iconsImport).map((icon, index) => (
-			<Fragment key={`${index}`}>
+			<section
+				key={`${index}`}
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					width: '60px',
+					textAlign: 'center'
+				}}
+			>
 				{icon[1]({
 					height: 50,
 					width: 50,
 					color: '#000000'
 				})}
-			</Fragment>
+				<span>{icon[0]}</span>
+			</section>
 		))}
-	</>
+	</article>
 )
