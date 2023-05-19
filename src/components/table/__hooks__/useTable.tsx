@@ -1,4 +1,3 @@
-'use client'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { UseTableProps } from './UseTableProps'
 import { createHeaders } from './createHeaders'
@@ -7,7 +6,7 @@ const useTable = ({ headers, minCellWidth }: UseTableProps) => {
 	//Total Height of table
 	const [tableHeight, setTableHeight] = useState('auto')
 	//column index to resize
-	const [activeIndex, setActiveIndex] = useState(null)
+	const [activeIndex, setActiveIndex] = useState<number | null>(null)
 	const tableElement = useRef<HTMLTableElement>(null)
 	const columns = createHeaders(headers)
 
@@ -18,7 +17,7 @@ const useTable = ({ headers, minCellWidth }: UseTableProps) => {
 		}
 	}, [])
 
-	const mouseDown = (index: any) => {
+	const mouseDown = (index: number) => {
 		setActiveIndex(index)
 	}
 

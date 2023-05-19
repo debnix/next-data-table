@@ -2,8 +2,14 @@ import './table-head.scss'
 import Checkbox from '../../atoms/checkbox/Checkbox'
 import { TableHeadProps } from './TableHeadProps'
 
-const TableHead = ({ showChecks, columns, checkHead }: TableHeadProps) => {
-	console.log({ checkHead })
+const TableHead = ({
+	showChecks,
+	checkHead,
+	tableHeight,
+	columns,
+	mouseDown,
+	activeIndex
+}: TableHeadProps) => {
 	return (
 		<thead className="thead">
 			<tr>
@@ -19,9 +25,16 @@ const TableHead = ({ showChecks, columns, checkHead }: TableHeadProps) => {
 					</th>
 				) : null}
 				{/**Text columns */}
-				{columns.map((column) => (
-					<th key={column.name} className="column-head">
-						{column.name.charAt(0).toUpperCase() + column.name.slice(1)}
+				{columns.map(({ ref, text }: any, i: number) => (
+					<th ref={ref} key={text}>
+						<span>{text}</span>
+						<div
+							style={{ height: tableHeight }}
+							onMouseDown={() => mouseDown(i)}
+							className={`resize-handle ${
+								activeIndex === i ? 'active' : 'idle'
+							}`}
+						/>
 					</th>
 				))}
 			</tr>
