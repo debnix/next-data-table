@@ -14,7 +14,10 @@ const Checkbox = ({
 
 	useEffect(() => {
 		setCheck(value ? true : false)
-		checkbox.current.indeterminate = indeterminate
+		if (checkbox.current) {
+			const check: HTMLInputElement = checkbox.current
+			check.indeterminate = indeterminate ? true : false
+		}
 	}, [value, indeterminate])
 
 	useEffect(() => {
