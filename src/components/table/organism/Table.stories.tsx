@@ -10,29 +10,30 @@ const component: ComponentStory<typeof Table> = (args) => <Table {...args} />
 
 export const table = component.bind({})
 table.args = {
-	showChecks: true,
+	showChecks: false,
 	pagination: true,
 	pageSizeOptions: [10, 20, 30],
-	paginationMode: { server: true, totalRows: 26 },
+	paginationMode: { server: false, totalRows: 26 },
 	handleCheck: (checks: string[]) => {
 		console.log(checks)
 	},
-	columns: [
-		{ name: 'firstname', sortable: true },
-		{ name: 'lastname', sortable: true },
-		{ name: 'age', sortable: true }
+	headers: [
+		{ text: 'firstname', sortable: true },
+		{ text: 'lastname', sortable: true },
+		{ text: 'age', sortable: true }
 	],
+	minCellWidth: 10,
 	rows: [
 		{ id: '1', columns: ['Andres', 'Quintero', '10'], checked: true },
 		{ id: '2', columns: ['Dario', 'Quintero', '20'] },
 		{ id: '3', columns: ['Alex', 'Quintero', '30'] },
 		{ id: '4', columns: ['Alex', 'Quintero', '40'] },
-		{ id: '5', columns: ['Alex', 'Quintero', '50'] }
-		/*{ id: '6', columns: ['Alex', 'Quintero', '60'] },
+		{ id: '5', columns: ['Alex', 'Quintero', '50'] },
+		{ id: '6', columns: ['Alex', 'Quintero', '60'] },
 		{ id: '7', columns: ['Alex', 'Quintero', '70'] },
 		{ id: '8', columns: ['Alex', 'Quintero', '80'] },
 		{ id: '9', columns: ['Alex', 'Quintero', '90'] },
-		{ id: '10', columns: ['Alex', 'Quintero', '100'] }
+		{ id: '10', columns: ['Alex', 'Quintero', '100'] },
 		{ id: '11', columns: ['Alex', 'Quintero', '110'] },
 		{ id: '12', columns: ['Alex', 'Quintero', '120'] },
 		{ id: '13', columns: ['Alex', 'Quintero', '130'] },
@@ -48,6 +49,6 @@ table.args = {
 		{ id: '23', columns: ['Alex', 'Quintero', '230'] },
 		{ id: '24', columns: ['Alex', 'Quintero', '240'] },
 		{ id: '25', columns: ['Alex', 'Quintero', '250'] },
-		{ id: '26', columns: ['Alex', 'Quintero', '260'] } */
+		{ id: '26', columns: ['Alex', 'Quintero', '260'] }
 	]
 }

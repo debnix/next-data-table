@@ -16,17 +16,28 @@ const TableUI = ({
 	pageSizeOptions,
 	disableNext,
 	disableBack,
-	range
+	range,
+	gridColumns,
+	minCellWidth,
+	tableElement,
+	tableHeight,
+	activeIndex,
+	mouseDown,
+	columnCheckElement
 }: TableUIProps) => {
 	return (
-		<article>
-			<table className="table">
+		<article className="table-wrapper">
+			<table
+				className="resizeable-table"
+				ref={tableElement}
+				style={{ gridTemplateColumns: gridColumns }}
+			>
 				{/**Head table */}
 				<thead>
 					<tr>
 						{/**Head check */}
 						{showChecks ? (
-							<th className="column-check">
+							<th className="column-check" ref={columnCheckElement}>
 								<Checkbox
 									value={checkAll.check}
 									onChange={handleCheckAll}
@@ -35,9 +46,27 @@ const TableUI = ({
 							</th>
 						) : null}
 						{/**Text columns */}
-						{columns.map((column) => (
-							<th key={column.name}>
+						{/* {columns.map((column) => (
+							<th key={column.name} style={{ minWidth: `${minCellWidth}px` }}>
 								{column.name.charAt(0).toUpperCase() + column.name.slice(1)}
+							</th>
+						))} */}
+						{columns.map(({ ref, text }: any, index: number) => (
+							<th
+								ref={ref}
+								key={`${text}-${showChecks ? index + 1 : index}`}
+								style={{ minWidth: `${minCellWidth}px` }}
+							>
+								<span>{text}</span>
+								<div
+									style={{ height: tableHeight }}
+									onMouseDown={() => mouseDown(showChecks ? index + 1 : index)}
+									className={`resize-handle ${
+										activeIndex === (showChecks ? index + 1 : index)
+											? 'active'
+											: 'idle'
+									}`}
+								/>
 							</th>
 						))}
 					</tr>

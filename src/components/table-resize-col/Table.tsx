@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import './table-resize.scss'
 
-const createHeaders = (headers: any) => {
+const createHeaders = (headers: any): { text: string; ref: any }[] => {
 	return headers.map((item: any) => ({
 		text: item,
 		ref: useRef()
@@ -13,15 +13,21 @@ const Table = ({ headers, minCellWidth, tableContent }: any) => {
 	//Total Height of table
 	const [tableHeight, setTableHeight] = useState('auto')
 	//column index to resize
-	const [activeIndex, setActiveIndex] = useState(null)
+	const [activeIndex, setActiveIndex] = useState<number | null>(null)
+	const [gridColumns, setGridColumns] = useState<string>('')
 	const tableElement = useRef<any>(null)
 	const columns = createHeaders(headers)
 
 	useEffect(() => {
+		let strGrid: string = ''
+		headers.forEach((col: any) => {
+			strGrid += ' minmax(50px, 1fr)'
+		})
+		setGridColumns(strGrid)
 		setTableHeight(tableElement.current.offsetHeight)
 	}, [])
 
-	const mouseDown = (index: any) => {
+	const mouseDown = (index: number) => {
 		setActiveIndex(index)
 	}
 
@@ -68,11 +74,19 @@ const Table = ({ headers, minCellWidth, tableContent }: any) => {
 
 	return (
 		<article className="table-wrapper">
-			<table className="resizeable-table" ref={tableElement}>
+			<table
+				className="resizeable-table"
+				ref={tableElement}
+				style={{ gridTemplateColumns: gridColumns }}
+			>
 				<thead>
 					<tr>
 						{columns.map(({ ref, text }: any, i: number) => (
-							<th ref={ref} key={text}>
+							<th
+								ref={ref}
+								key={text}
+								style={{ minWidth: `${minCellWidth}px` }}
+							>
 								<span>{text}</span>
 								<div
 									style={{ height: tableHeight }}

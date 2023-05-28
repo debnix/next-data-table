@@ -9,9 +9,9 @@ export default {
 
 const component: ComponentStory<typeof Table> = (args) => <Table {...args} />
 export const tableReisze = component.bind({})
-const tableHeaders = ['Items', 'Order #', 'Amount', 'Status', 'Delivery Driver']
+const tableHeaders = ['Items', 'Order #', 'Amount', 'Status', 'Driver']
 tableReisze.args = {
 	headers: tableHeaders,
-	minCellWidth: 120,
+	minCellWidth: 14,
 	tableContent: <TableContent />
 }

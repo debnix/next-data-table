@@ -3,8 +3,9 @@ import { SelectPaginationProps } from '@/components/table/molecules/select-pagin
 
 export interface TableProps extends Omit<SelectPaginationProps, 'callbackSelect'> {
   showChecks: boolean
-  columns: Column[]
+  headers: Header[]
   rows: Row[]
+  minCellWidth: number
   handleCheck?: (rowsChecked: string[]) => void
   pagination?: boolean
   paginationMode?: PaginationServer
@@ -15,8 +16,8 @@ export interface PaginationServer {
   totalRows: number
 }
 
-export interface Column {
-  name: string
+export interface Header {
+  text: string
   sortable: boolean
 }
 
@@ -31,10 +32,19 @@ export interface CheckAll {
   indeterminate: boolean
 }
 
-export interface TableUIProps extends TableProps, PaginationProps {
-  handleCheckChange: (idRow: string, checked: boolean) => void,
-  handleCheckAll: (event: boolean) => void,
+export interface TableUIProps extends Omit<TableProps, 'headers'>, PaginationProps {
+  handleCheckChange: (idRow: string, checked: boolean) => void
+  handleCheckAll: (event: boolean) => void
   checkAll: CheckAll
+  gridColumns: string
+  columns: Column[]
+  tableElement: React.RefObject<HTMLTableElement>
+  tableHeight: string
+  activeIndex: number | null
+  columnCheckElement: React.RefObject<HTMLTableCellElement>
+  mouseDown: (index: number) => void
 }
 
-
+export interface Column extends Header {
+  ref: React.MutableRefObject<undefined>
+}
