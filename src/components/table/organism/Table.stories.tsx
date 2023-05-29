@@ -13,7 +13,7 @@ table.args = {
 	showChecks: false,
 	pagination: true,
 	pageSizeOptions: [10, 20, 30],
-	paginationMode: { server: true, totalRows: 26 },
+	paginationMode: { server: false, totalRows: 26 },
 	handleCheck: (checks: string[]) => {
 		console.log(checks)
 	},

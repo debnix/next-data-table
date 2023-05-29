@@ -15,4 +15,9 @@ export interface RangePagination {
   total: number
 }
 
-export type ChangePage = 'FIRST' | 'NEXT' | 'BACK' | 'LAST'
+export const STEPS_CHANGE_PAGE = {
+  FIRST: 'FIRST', NEXT: 'NEXT', BACK: 'BACK', LAST: 'LAST'
+}
+
+export type ChangePage = keyof typeof STEPS_CHANGE_PAGE
+

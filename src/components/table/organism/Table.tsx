@@ -4,7 +4,8 @@ import { CheckAll, TableProps, Row } from './TableProps'
 import TableUI from './TableUI'
 import {
 	ChangePage,
-	RangePagination
+	RangePagination,
+	STEPS_CHANGE_PAGE
 } from '@/components/table/molecules/pagination/PaginationProps'
 import useTable from '../__hooks__/useTable'
 
@@ -114,77 +115,43 @@ const Table = ({
 		}
 	}
 
-	const handleChangePageServer = (changePage: ChangePage) => {
-		if (paginationMode?.server) {
-			if (changePage === 'NEXT') {
-				const temporalPointer = pointerRowPosition + rowsPerPage
-				let endPosition =
-					temporalPointer > paginationMode.totalRows
-						? paginationMode.totalRows
-						: temporalPointer
-				setDisableBack(pointerRowPosition <= 0)
-				setDisableNext(endPosition === paginationMode.totalRows)
-				setPointerRowPosition(endPosition)
-				setRangePagination({
-					...rangePagination,
-					from: pointerRowPosition + 1,
-					to: endPosition
-				})
-			} else if (changePage === 'BACK') {
-				const mathPagination = pointerRowPosition % rowsPerPage
-				const endPosition =
-					mathPagination === 0
-						? pointerRowPosition - rowsPerPage
-						: pointerRowPosition - mathPagination
-				const startPosition = endPosition - rowsPerPage
-				setPointerRowPosition(endPosition)
-				setDisableBack(startPosition <= 0)
-				setDisableNext(false)
-				setRangePagination({
-					...rangePagination,
-					from: startPosition + 1,
-					to: endPosition
-				})
-			} else if (changePage === 'FIRST') {
-				handleRowPerPage(rowsPerPage)
-				setDisableNext(rowsState.length >= paginationMode?.totalRows)
-			} else if (changePage === 'LAST') {
-				const endPosition = paginationMode.totalRows
-				const quantityRows = endPosition % rowsPerPage
-				const startPosition =
-					quantityRows == 0
-						? endPosition - rowsPerPage
-						: endPosition - quantityRows
-				setPointerRowPosition(endPosition)
-				setDisableNext(true)
-				setDisableBack(false)
-				setRangePagination({
-					...rangePagination,
-					from: startPosition + 1,
-					to: endPosition
-				})
-			}
-		}
-	}
-
-	const handleChangelocal = (changePage: ChangePage) => {
-		if (changePage === 'NEXT') {
+	const handleChangePage = (changePage: ChangePage) => {
+		//Get total rows of local or server
+		const totalRows =
+			paginationMode && paginationMode.server
+				? paginationMode.totalRows
+				: rows.length
+		//Next page
+		if (changePage === STEPS_CHANGE_PAGE.NEXT) {
 			const temporalPointer = pointerRowPosition + rowsPerPage
 			let endPosition =
-				temporalPointer > rows.length ? rows.length : temporalPointer
-			setRowsState(rows.slice(pointerRowPosition, endPosition))
-			setDisableBack(pointerRowPosition <= 0)
-			setDisableNext(endPosition === rows.length)
+				temporalPointer > totalRows ? totalRows : temporalPointer
+			//if pagination is local
+			if (!paginationMode?.server) {
+				setRowsState(rows.slice(pointerRowPosition, endPosition))
+			}
 			setPointerRowPosition(endPosition)
+			setDisableBack(pointerRowPosition <= 0)
+			setDisableNext(endPosition === totalRows)
 			setRangePagination({
 				...rangePagination,
 				from: pointerRowPosition + 1,
 				to: endPosition
 			})
-		} else if (changePage === 'BACK') {
-			const endPosition = pointerRowPosition - rowsState.length
+		}
+		//Back page
+		else if (changePage === STEPS_CHANGE_PAGE.BACK) {
+			const mathPagination = pointerRowPosition % rowsPerPage
+			const endPosition = paginationMode?.server
+				? mathPagination === 0
+					? pointerRowPosition - rowsPerPage
+					: pointerRowPosition - mathPagination
+				: pointerRowPosition - rowsState.length
 			const startPosition = endPosition - rowsPerPage
-			setRowsState(rows.slice(startPosition, endPosition))
+			//if pagination is local
+			if (!paginationMode?.server) {
+				setRowsState(rows.slice(startPosition, endPosition))
+			}
 			setPointerRowPosition(endPosition)
 			setDisableBack(startPosition <= 0)
 			setDisableNext(false)
@@ -193,16 +160,27 @@ const Table = ({
 				from: startPosition + 1,
 				to: endPosition
 			})
-		} else if (changePage === 'FIRST') {
+		}
+		//first page
+		else if (changePage === STEPS_CHANGE_PAGE.FIRST) {
 			handleRowPerPage(rowsPerPage)
-		} else if (changePage == 'LAST') {
-			const endPosition = rows.length
-			const quantityRows = rows.length % rowsPerPage
+			if (paginationMode?.server) {
+				setDisableNext(rowsState.length >= paginationMode?.totalRows)
+			}
+		}
+		//last page
+		else if (changePage === STEPS_CHANGE_PAGE.LAST) {
+			const endPosition = paginationMode?.server
+				? paginationMode.totalRows
+				: rows.length
+			const quantityRows = endPosition % rowsPerPage
 			const startPosition =
 				quantityRows == 0
 					? endPosition - rowsPerPage
 					: endPosition - quantityRows
-			setRowsState(rows.slice(startPosition, endPosition))
+			if (!paginationMode?.server) {
+				setRowsState(rows.slice(startPosition, endPosition))
+			}
 			setPointerRowPosition(endPosition)
 			setDisableNext(true)
 			setDisableBack(false)
@@ -214,13 +192,6 @@ const Table = ({
 		}
 	}
 
-	const handleChangePage = (changePage: ChangePage) => {
-		if (paginationMode?.server) {
-			handleChangePageServer(changePage)
-		} else {
-			handleChangelocal(changePage)
-		}
-	}
 	const handleRowPerPage = (newRowsPerPage: number) => {
 		const startPosition = 0
 		const endPosition =
