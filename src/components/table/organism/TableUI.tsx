@@ -46,11 +46,6 @@ const TableUI = ({
 							</th>
 						) : null}
 						{/**Text columns */}
-						{/* {columns.map((column) => (
-							<th key={column.name} style={{ minWidth: `${minCellWidth}px` }}>
-								{column.name.charAt(0).toUpperCase() + column.name.slice(1)}
-							</th>
-						))} */}
 						{columns.map(({ ref, text }: any, index: number) => (
 							<th
 								ref={ref}

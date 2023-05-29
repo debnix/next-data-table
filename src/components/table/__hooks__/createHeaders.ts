@@ -1,9 +1,8 @@
 import { useRef } from 'react'
-import { HeadersTable } from './UseTableProps'
-import { CreateHeadersProps } from './CreateHeadersProps'
+import { Column, Header } from '../organism/TableProps'
 
-export const createHeaders = (headers: CreateHeadersProps[]): HeadersTable[] => {
-  return headers.map((item: CreateHeadersProps) => ({
+export const createHeaders = (headers: Header[]): Column[] => {
+  return headers.map((item: Header) => ({
     text: item.text,
     ref: useRef(),
     sortable: item.sortable
