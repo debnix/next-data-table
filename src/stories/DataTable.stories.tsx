@@ -1,4 +1,4 @@
-import Table from '@/components/table/organism/Table'
+import Table from '@/components/table/organism/useTableController'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 export default {

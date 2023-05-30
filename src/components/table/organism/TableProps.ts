@@ -1,4 +1,3 @@
-import { PaginationProps } from '@/components/table/molecules/pagination/PaginationProps'
 import { SelectPaginationProps } from '@/components/table/molecules/select-pagination/SelectPaginationProps'
 
 export interface TableProps extends Omit<SelectPaginationProps, 'callbackSelect'> {
@@ -23,26 +22,13 @@ export interface Header {
 
 export interface Row {
   id: string
-  columns: string[]
+  columns: React.ReactNode[]
   checked?: boolean
 }
 
 export interface CheckAll {
   check: boolean,
   indeterminate: boolean
-}
-
-export interface TableUIProps extends Omit<TableProps, 'headers'>, PaginationProps {
-  handleCheckChange: (idRow: string, checked: boolean) => void
-  handleCheckAll: (event: boolean) => void
-  checkAll: CheckAll
-  gridColumns: string
-  columns: Column[]
-  tableElement: React.RefObject<HTMLTableElement>
-  tableHeight: string
-  activeIndex: number | null
-  columnCheckElement: React.RefObject<HTMLTableCellElement>
-  mouseDown: (index: number) => void
 }
 
 export interface Column extends Header {

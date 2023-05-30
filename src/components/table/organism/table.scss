@@ -1,25 +1,3 @@
-:root{
-  /**********Colors********/
-  --primary: #000000;
-  --light: #ffffff;
-  --border-gold: #978145;
-  --hover-select: #9d9b9b;
-
-
-  /******Times animation********/
-  --time-animation-menu: 1s;
-  --time-animation-options: 0.5s;
-
-  /*********Size devices*********/
-  --mobile-sm: 364px;
-  --mobile-md: 576px;
-  --tablets-sm: 992px;
-  --tablets-xl: 1200px;
-
-
-}
-
-
 .ripple {
   background-position: center;
   transition: background 0.8s;
@@ -36,38 +14,13 @@
   text-align: left;
 }
 
-
-.table-wrapper {
-	margin-bottom: 25px;
-	border-radius: 6px;
-	background: #fff;
-	overflow: hidden; /* Clip any scrollbars that appear */
-}
-
 table{
   border-radius: 10px;
-  //border-collapse: collapse;
   text-align: center;
   width: 100%;
 	display: grid;
 	overflow: auto;
-  
-/*   th{
-    border-top: 1px solid var(--border-gold);
-    padding: 0.5rem 0.2rem;
-  }
-  tr{    
-    border-bottom: 1px solid var(--border-gold);
-  }
-  td{
-    padding: 0.2rem;
-    font-size: 0.9rem;
-  } */
-  
 } 
-
-
-
 table thead,
 table tbody,
 table tr {

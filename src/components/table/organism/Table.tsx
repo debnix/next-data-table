@@ -1,238 +1,110 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { CheckAll, TableProps, Row } from './TableProps'
-import TableUI from './TableUI'
-import {
-	ChangePage,
-	RangePagination,
-	STEPS_CHANGE_PAGE
-} from '@/components/table/molecules/pagination/PaginationProps'
-import useTable from '../__hooks__/useTable'
+import Checkbox from '../atoms/checkbox/Checkbox'
+import Pagination from '@/components/table/molecules/pagination/Pagination'
+import './table.scss'
+import { TableProps } from './TableProps'
+import useTableController from './useTableController'
 
-const Table = ({
-	headers,
-	rows,
-	showChecks,
-	handleCheck,
-	pageSizeOptions,
-	pagination,
-	paginationMode,
-	minCellWidth
-}: TableProps) => {
-	const [pointerRowPosition, setPointerRowPosition] = useState(0)
-	const [rowsChecked, setRowsChecked] = useState<string[]>([])
-	const [rowsState, setRowsState] = useState<Row[]>([])
-	const [rowsPerPage, setRowsPerPage] = useState(0)
-	const [disableNext, setDisableNext] = useState<boolean>(false)
-	const [disableBack, setDisableBack] = useState<boolean>(false)
+const Table = (props: TableProps) => {
 	const {
-		tableElement,
 		columns,
+		rows,
+		showChecks,
+		handleCheckChange,
+		handleCheckAll,
+		checkAll,
+		pagination,
+		handleChangePage,
+		handleRowPerPage,
+		pageSizeOptions,
+		disableNext,
+		disableBack,
+		range,
+		gridColumns,
+		minCellWidth,
+		tableElement,
 		tableHeight,
 		activeIndex,
 		mouseDown,
-		columnCheckElement,
-		gridColumns
-	} = useTable({ headers, minCellWidth, showChecks })
-
-	const [rangePagination, setRangePagination] = useState<RangePagination>({
-		from: 0,
-		to: 0,
-		total: 0
-	})
-	const [checkAll, setCheckAll] = useState<CheckAll>({
-		check: false,
-		indeterminate: false
-	})
-
-	useEffect(() => {
-		//Get rows checked
-		const checked: string[] = rows
-			.filter((row) => row.checked)
-			.map((row) => row.id)
-		//Set states
-		const temporalRows = rows.slice(0, pageSizeOptions[0])
-		setRowsChecked(checked)
-		setRowsPerPage(pageSizeOptions ? pageSizeOptions[0] : rows.length)
-		setRowsState(pageSizeOptions ? temporalRows : rows)
-		setCheckAll({
-			...checkAll,
-			check: checked.length === rows.length,
-			indeterminate: checked.length > 0 && checked.length < rows.length
-		})
-		setPointerRowPosition(pageSizeOptions[0])
-		setDisableBack(true)
-		setDisableNext(
-			paginationMode?.server
-				? paginationMode.totalRows <= pageSizeOptions[0]
-				: pageSizeOptions[0] >= rows.length
-		)
-		setRangePagination({
-			from: 1,
-			to: temporalRows.length,
-			total: paginationMode ? paginationMode.totalRows : rows.length
-		})
-	}, [rows])
-
-	const handleCheckChange = (idRow: string, checked: boolean) => {
-		if (handleCheck) {
-			let checks = []
-			checks = checked
-				? [...rowsChecked, idRow]
-				: rowsChecked.filter((row) => row !== idRow)
-			setCheckAll({
-				check: checks.length === rowsState.length ? true : false,
-				indeterminate: checks.length > 0 && checks.length < rowsState.length
-			})
-			setRowsChecked(checks)
-			handleCheck(checks)
-			setRowsState(
-				rowsState.map((row) => {
-					const resp: Row = idRow === row.id ? { ...row, checked } : row
-					return resp
-				})
-			)
-		}
-	}
-
-	const handleCheckAll = (event: boolean) => {
-		if (handleCheck) {
-			const checks: string[] = event ? rows.map((row) => row.id) : []
-			setRowsChecked(checks)
-			handleCheck(checks)
-			setCheckAll({
-				check: event,
-				indeterminate: false
-			})
-			setRowsState(
-				rowsState.map((row) => {
-					const resp: Row = { ...row, checked: event }
-					return resp
-				})
-			)
-		} else {
-			setCheckAll({ check: false, indeterminate: false })
-		}
-	}
-
-	const handleChangePage = (changePage: ChangePage) => {
-		//Get total rows of local or server
-		const totalRows =
-			paginationMode && paginationMode.server
-				? paginationMode.totalRows
-				: rows.length
-		//Next page
-		if (changePage === STEPS_CHANGE_PAGE.NEXT) {
-			const temporalPointer = pointerRowPosition + rowsPerPage
-			let endPosition =
-				temporalPointer > totalRows ? totalRows : temporalPointer
-			//if pagination is local
-			if (!paginationMode?.server) {
-				setRowsState(rows.slice(pointerRowPosition, endPosition))
-			}
-			setPointerRowPosition(endPosition)
-			setDisableBack(pointerRowPosition <= 0)
-			setDisableNext(endPosition === totalRows)
-			setRangePagination({
-				...rangePagination,
-				from: pointerRowPosition + 1,
-				to: endPosition
-			})
-		}
-		//Back page
-		else if (changePage === STEPS_CHANGE_PAGE.BACK) {
-			const mathPagination = pointerRowPosition % rowsPerPage
-			const endPosition = paginationMode?.server
-				? mathPagination === 0
-					? pointerRowPosition - rowsPerPage
-					: pointerRowPosition - mathPagination
-				: pointerRowPosition - rowsState.length
-			const startPosition = endPosition - rowsPerPage
-			//if pagination is local
-			if (!paginationMode?.server) {
-				setRowsState(rows.slice(startPosition, endPosition))
-			}
-			setPointerRowPosition(endPosition)
-			setDisableBack(startPosition <= 0)
-			setDisableNext(false)
-			setRangePagination({
-				...rangePagination,
-				from: startPosition + 1,
-				to: endPosition
-			})
-		}
-		//first page
-		else if (changePage === STEPS_CHANGE_PAGE.FIRST) {
-			handleRowPerPage(rowsPerPage)
-			if (paginationMode?.server) {
-				setDisableNext(rowsState.length >= paginationMode?.totalRows)
-			}
-		}
-		//last page
-		else if (changePage === STEPS_CHANGE_PAGE.LAST) {
-			const endPosition = paginationMode?.server
-				? paginationMode.totalRows
-				: rows.length
-			const quantityRows = endPosition % rowsPerPage
-			const startPosition =
-				quantityRows == 0
-					? endPosition - rowsPerPage
-					: endPosition - quantityRows
-			if (!paginationMode?.server) {
-				setRowsState(rows.slice(startPosition, endPosition))
-			}
-			setPointerRowPosition(endPosition)
-			setDisableNext(true)
-			setDisableBack(false)
-			setRangePagination({
-				...rangePagination,
-				from: startPosition + 1,
-				to: endPosition
-			})
-		}
-	}
-
-	const handleRowPerPage = (newRowsPerPage: number) => {
-		const startPosition = 0
-		const endPosition =
-			newRowsPerPage >= rows.length
-				? newRowsPerPage
-				: startPosition + newRowsPerPage
-		setRowsState(rows.slice(startPosition, endPosition))
-		setRowsPerPage(newRowsPerPage)
-		setPointerRowPosition(endPosition)
-		setDisableNext(endPosition >= rows.length || newRowsPerPage >= rows.length)
-		setDisableBack(newRowsPerPage <= rows.length || startPosition <= 0)
-		setRangePagination({
-			...rangePagination,
-			from: startPosition + 1,
-			to: endPosition
-		})
-	}
+		columnCheckElement
+	} = useTableController(props)
 
 	return (
-		<TableUI
-			columns={columns}
-			handleCheckChange={handleCheckChange}
-			rows={rowsState}
-			showChecks={showChecks}
-			handleCheckAll={handleCheckAll}
-			checkAll={checkAll}
-			pageSizeOptions={pageSizeOptions}
-			pagination={pagination}
-			handleChangePage={handleChangePage}
-			handleRowPerPage={handleRowPerPage}
-			disableNext={disableNext}
-			disableBack={disableBack}
-			range={rangePagination}
-			gridColumns={gridColumns}
-			minCellWidth={minCellWidth}
-			tableElement={tableElement}
-			tableHeight={tableHeight}
-			activeIndex={activeIndex}
-			mouseDown={mouseDown}
-			columnCheckElement={columnCheckElement}
-		/>
+		<article>
+			<table
+				className="resizeable-table"
+				ref={tableElement}
+				style={{ gridTemplateColumns: gridColumns }}
+			>
+				{/**Head table */}
+				<thead>
+					<tr>
+						{/**Head check */}
+						{showChecks ? (
+							<th className="column-check" ref={columnCheckElement}>
+								<Checkbox
+									value={checkAll.check}
+									onChange={handleCheckAll}
+									indeterminate={checkAll.indeterminate}
+								/>
+							</th>
+						) : null}
+						{/**Text columns */}
+						{columns.map(({ ref, text }: any, index: number) => (
+							<th
+								ref={ref}
+								key={`${text}-${showChecks ? index + 1 : index}`}
+								style={{ minWidth: `${minCellWidth}px` }}
+							>
+								<span>{text}</span>
+								<div
+									style={{ height: tableHeight }}
+									onMouseDown={() => mouseDown(showChecks ? index + 1 : index)}
+									className={`resize-handle ${
+										activeIndex === (showChecks ? index + 1 : index)
+											? 'active'
+											: 'idle'
+									}`}
+								/>
+							</th>
+						))}
+					</tr>
+				</thead>
+				{/**Body table */}
+				<tbody>
+					{rows.map((row) => (
+						<tr key={row.id}>
+							{/**Check */}
+							{showChecks ? (
+								<td className="column-check">
+									<Checkbox
+										key={`checkbox-${row.id}`}
+										value={row.checked}
+										defaultChecked={row.checked}
+										onChange={(event) => handleCheckChange(row.id, event)}
+									/>
+								</td>
+							) : null}
+							{/**text row-column */}
+							{row.columns.map((value, index) => (
+								<td key={`row${row.id}-column${index}`}>{value}</td>
+							))}
+						</tr>
+					))}
+				</tbody>
+			</table>
+			{pagination ? (
+				<Pagination
+					handleChangePage={handleChangePage}
+					handleRowPerPage={handleRowPerPage}
+					pageSizeOptions={pageSizeOptions}
+					disableNext={disableNext}
+					disableLast={disableNext}
+					disableFirst={disableBack}
+					disableBack={disableBack}
+					range={range}
+				/>
+			) : null}
+		</article>
 	)
 }
 
